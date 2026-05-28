@@ -5,19 +5,28 @@ image-version: latest
 base-image: ghcr.io/ublue-os/bluefin-dx
 
 modules:
-  # 1. UTILITIES DI BASE (Piccoli tool integrati nel sistema)
+  # 1. CUSTOM FILES AND CONFIGURATIONS 
+  # (MUST go first so the systemd module can find the battery script later)
+  - type: files
+    files:
+      - source: usr
+        destination: /usr
+      - source: etc
+        destination: /etc
+
+  # 2. UTILITIES (Small core system tools)
   - type: rpm-ostree
     install:
       - fzf
       - bat
 
-  # 2. SERVIZIO BATTERIA (La logica hardware del ThinkPad)
+  # 3. BATTERY SERVICE (Now the file exists, it can be enabled successfully!)
   - type: systemd
     system:
       enabled:
         - thinkpad-battery-manager.service
 
-  # 3. BROWSER E APP GRAFICHE (Gestiti in modo sicuro via Flatpak)
+  # 4. BROWSERS AND GUI APPS (Safely managed via Flatpak)
   - type: default-flatpaks
     notify: true
     system:
@@ -28,11 +37,3 @@ modules:
         - com.google.Chrome
         - com.brave.Browser
         - com.mattjakeman.ExtensionManager
-
-  # 4. FILE E CONFIGURAZIONI (Iniettiamo il tuo Zsh)
-  - type: files
-    files:
-      - source: usr
-        destination: /usr
-      - source: etc
-        destination: /etc
