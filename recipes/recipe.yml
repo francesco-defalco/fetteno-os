@@ -5,7 +5,7 @@ image-version: latest
 base-image: ghcr.io/ublue-os/bluefin-dx
 
 modules:
-  # 1. CUSTOM FILES AND CONFIGURATIONS 
+  # Custom files (must precede systemd module)
   - type: files
     files:
       - source: usr
@@ -13,23 +13,45 @@ modules:
       - source: etc
         destination: /etc
 
-  # 2. UTILITIES
+  # System packages and extra repositories
   - type: rpm-ostree
+    copr:
+      - dawid/mscorefonts
     install:
-      - fzf
-      - bat
+      - bpftrace
+      - bcc-tools
+      - brightnessctl
+      - ddcutil
+      - flameshot
+      - gawk
+      - inotify-tools
+      - preload
+      - redshift
+      - refind
+      - vdpauinfo
+      - libva-utils
+      - ffmpeg
+      - gpaste
+      - gpaste-ui
+      - rsms-inter-fonts
+      - google-roboto-fonts
+      - mscore-fonts
 
-  # 3. BATTERY SERVICE
+  # ThinkPad battery threshold service
   - type: systemd
     system:
       enabled:
         - thinkpad-battery-manager.service
 
-  # 4. BROWSERS AND GUI APPS (v2 Syntax)
+  # GUI applications and browsers
   - type: default-flatpaks
     configurations:
       - scope: system
         install:
           - com.google.Chrome
           - com.brave.Browser
+          - com.opera.Opera
+          - com.visualstudio.code
+          - org.videolan.VLC
+          - com.protonvpn.www
           - com.mattjakeman.ExtensionManager
