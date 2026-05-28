@@ -5,16 +5,37 @@ image-version: latest
 base-image: ghcr.io/ublue-os/bluefin-dx
 
 modules:
+  # 1. DEVELOPMENT TOOLS (Installed in the core of the operating system)
   - type: rpm-ostree
     install:
       - fzf
       - bat
+      - golang                 # Go
+      - rust                   # Rust
+      - cargo                  # Rust package manager
+      - helm                   # Kubernetes Helm
+      - minikube               # Minikube
+      - java-21-openjdk-devel  # Java Development Kit (version 21)
 
+  # 2. BATTERY SERVICE (ThinkPad specific)
   - type: systemd
     system:
       enabled:
         - thinkpad-battery-manager.service
 
+  # 3. BROWSERS AND GUI APPS (Installed as system Flatpaks)
+  - type: default-flatpaks
+    notify: true
+    system:
+      repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
+      repo-name: flathub
+      repo-title: "Flathub"
+      install:
+        - com.google.Chrome
+        - com.brave.Browser
+        - com.mattjakeman.ExtensionManager # GNOME Extension Store (for Bing Wallpaper)
+
+  # 4. CUSTOM FILES AND CONFIGURATIONS (Injected into the image)
   - type: files
     files:
       - source: usr
