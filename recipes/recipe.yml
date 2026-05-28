@@ -16,5 +16,5 @@ modules:
 
   - type: files
     files:
-      - usr: /usr
-      - etc: /etc
+      usr: /usr
+      etc: /etc
