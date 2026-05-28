@@ -13,10 +13,13 @@ modules:
       - source: etc
         destination: /etc
 
-  # System packages and extra repositories
-  - type: rpm-ostree
+  # Extra repositories
+  - type: copr
     copr:
       - dawid/mscorefonts
+
+  # System packages
+  - type: rpm-ostree
     install:
       - bpftrace
       - bcc-tools
