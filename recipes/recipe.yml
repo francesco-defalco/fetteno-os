@@ -26,13 +26,9 @@ modules:
       enabled:
         - thinkpad-battery-manager.service
 
-  # 4. BROWSERS AND GUI APPS (Safely managed via Flatpak)
+  # 4. BROWSERS AND GUI APPS (Safely managed via Flatpak - v2 Syntax)
   - type: default-flatpaks
-    notify: true
     system:
-      repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
-      repo-name: flathub
-      repo-title: "Flathub"
       install:
         - com.google.Chrome
         - com.brave.Browser
