@@ -5,25 +5,19 @@ image-version: latest
 base-image: ghcr.io/ublue-os/bluefin-dx
 
 modules:
-  # 1. DEVELOPMENT TOOLS (Installed in the core of the operating system)
+  # 1. UTILITIES DI BASE (Piccoli tool integrati nel sistema)
   - type: rpm-ostree
     install:
       - fzf
       - bat
-      - golang                 # Go
-      - rust                   # Rust
-      - cargo                  # Rust package manager
-      - helm                   # Kubernetes Helm
-      - minikube               # Minikube
-      - java-21-openjdk-devel  # Java Development Kit (version 21)
 
-  # 2. BATTERY SERVICE (ThinkPad specific)
+  # 2. SERVIZIO BATTERIA (La logica hardware del ThinkPad)
   - type: systemd
     system:
       enabled:
         - thinkpad-battery-manager.service
 
-  # 3. BROWSERS AND GUI APPS (Installed as system Flatpaks)
+  # 3. BROWSER E APP GRAFICHE (Gestiti in modo sicuro via Flatpak)
   - type: default-flatpaks
     notify: true
     system:
@@ -33,9 +27,9 @@ modules:
       install:
         - com.google.Chrome
         - com.brave.Browser
-        - com.mattjakeman.ExtensionManager # GNOME Extension Store (for Bing Wallpaper)
+        - com.mattjakeman.ExtensionManager
 
-  # 4. CUSTOM FILES AND CONFIGURATIONS (Injected into the image)
+  # 4. FILE E CONFIGURAZIONI (Iniettiamo il tuo Zsh)
   - type: files
     files:
       - source: usr
