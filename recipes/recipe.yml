@@ -5,7 +5,8 @@ image-version: latest
 base-image: ghcr.io/ublue-os/bluefin-dx
 
 modules:
-  # Custom files (must precede systemd module)
+  # 1. CUSTOM FILES
+  # This module must run first so the systemd service can find the battery script
   - type: files
     files:
       - source: usr
@@ -13,12 +14,8 @@ modules:
       - source: etc
         destination: /etc
 
-  # Extra repositories
-  - type: copr
-    repos:
-      - dawid/mscorefonts
-
-  # System packages
+  # 2. SYSTEM PACKAGES
+  # Installing essential CLI tools and missing dependencies from Linux Mint
   - type: rpm-ostree
     install:
       - bpftrace
@@ -38,15 +35,22 @@ modules:
       - gpaste-ui
       - rsms-inter-fonts
       - google-roboto-fonts
-      - mscore-fonts
 
-  # ThinkPad battery threshold service
+  # 3. CUSTOM SCRIPTS
+  # Execute bash scripts to install third-party repos (e.g., Microsoft Fonts)
+  - type: script
+    scripts:
+      - install-ms-fonts.sh
+
+  # 4. THINKPAD BATTERY SERVICE
+  # Enable the custom systemd service on boot
   - type: systemd
     system:
       enabled:
         - thinkpad-battery-manager.service
 
-  # GUI applications and browsers
+  # 5. FLATPAK APPLICATIONS
+  # Browsers, IDEs, and GUI apps installed securely in user space (v2 Syntax)
   - type: default-flatpaks
     configurations:
       - scope: system
