@@ -15,7 +15,7 @@ modules:
 
   # Extra repositories
   - type: copr
-    copr:
+    repos:
       - dawid/mscorefonts
 
   # System packages
