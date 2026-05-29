@@ -15,7 +15,7 @@ modules:
         destination: /etc
 
   # 2. SYSTEM PACKAGES
-  # Installing essential CLI tools and missing dependencies from Linux Mint
+  # Installing essential CLI tools and dependencies
   - type: rpm-ostree
     install:
       - bpftrace
@@ -25,9 +25,7 @@ modules:
       - flameshot
       - gawk
       - inotify-tools
-      - preload
       - redshift
-      - refind
       - vdpauinfo
       - libva-utils
       - ffmpeg
@@ -50,7 +48,7 @@ modules:
         - thinkpad-battery-manager.service
 
   # 5. FLATPAK APPLICATIONS
-  # Browsers, IDEs, and GUI apps installed securely in user space (v2 Syntax)
+  # Browsers, IDEs, and GUI apps installed securely in user space
   - type: default-flatpaks
     configurations:
       - scope: system
