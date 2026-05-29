@@ -1,12 +1,15 @@
 [Unit]
-Description=ThinkPad Battery Hysteresis (30% - 90%)
+Description=ThinkPad Battery Hysteresis Manager (30% - 90%)
+# Ensure this runs only after the main system is fully booted
 After=multi-user.target
 StartLimitBurst=0
 
 [Service]
+# 'oneshot' means the service runs the script once and then exits
 Type=oneshot
 Restart=on-failure
 ExecStart=/bin/bash /usr/libexec/thinkpad-battery.sh
 
 [Install]
+# Hook this service into the standard boot process
 WantedBy=multi-user.target
