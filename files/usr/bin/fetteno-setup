@@ -4,13 +4,17 @@ echo "=========================================="
 echo "  INITIALIZING FETTENO-OS ENVIRONMENT"
 echo "=========================================="
 
+# 0. Enable Developer Groups (Docker, Virtualization, etc.)
+echo "-> Enabling Developer Mode permissions..."
+# Verrà richiesta la password per i permessi di amministratore
+sudo ujust dx-group
+
 # 1. Install Microsoft Core Fonts safely via Homebrew
 echo "-> Installing Microsoft Fonts..."
 brew tap colindean/fonts-nonfree
 brew install font-microsoft-core-fonts
 
 # 2. Install Dev tools and isolated Python via Homebrew
-# Added 'python' to the brew list for a safe, user-space development environment
 echo "-> Installing Python, Helm, and Minikube..."
 brew install minikube helm python
 
