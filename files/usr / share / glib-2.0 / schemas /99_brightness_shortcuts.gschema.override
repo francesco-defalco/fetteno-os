@@ -1,17 +1,17 @@
-# --- CUSTOM BRIGHTNESS SHORTCUTS ---
+# --- EXTERNAL MONITOR BRIGHTNESS SHORTCUTS ---
 
-# 1. Register the new custom keybindings in GNOME's settings daemon
+# 1. Register the custom keybindings in GNOME's settings daemon
 [org.gnome.settings-daemon.plugins.media-keys]
 custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']
 
-# 2. Define action for Ctrl + F5 (Decrease Brightness)
+# 2. Action for Ctrl + F5 (Decrease Brightness via I2C/ddcutil)
 [org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/]
-name='Decrease Brightness'
-command='brightnessctl set 5%-'
+name='Decrease External Brightness'
+command='ddcutil setvcp 10 - 5'
 binding='<Primary>F5'
 
-# 3. Define action for Ctrl + F6 (Increase Brightness)
+# 3. Action for Ctrl + F6 (Increase Brightness via I2C/ddcutil)
 [org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/]
-name='Increase Brightness'
-command='brightnessctl set +5%'
+name='Increase External Brightness'
+command='ddcutil setvcp 10 + 5'
 binding='<Primary>F6'
