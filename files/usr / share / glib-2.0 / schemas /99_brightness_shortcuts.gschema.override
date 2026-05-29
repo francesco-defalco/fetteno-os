@@ -1,0 +1,17 @@
+# --- CUSTOM BRIGHTNESS SHORTCUTS ---
+
+# 1. Register the new custom keybindings in GNOME's settings daemon
+[org.gnome.settings-daemon.plugins.media-keys]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']
+
+# 2. Define action for Ctrl + F5 (Decrease Brightness)
+[org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/]
+name='Decrease Brightness'
+command='brightnessctl set 5%-'
+binding='<Primary>F5'
+
+# 3. Define action for Ctrl + F6 (Increase Brightness)
+[org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/]
+name='Increase Brightness'
+command='brightnessctl set +5%'
+binding='<Primary>F6'
