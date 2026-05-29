@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+echo "=========================================="
+echo "  INITIALIZING FETTENO-OS ENVIRONMENT"
+echo "=========================================="
+
+# 1. Install Microsoft Core Fonts safely via Homebrew
+echo "-> Installing Microsoft Fonts..."
+brew tap colindean/fonts-nonfree
+brew install font-microsoft-core-fonts
+
+# 2. Install Kubernetes and Dev tools via Homebrew
+echo "-> Installing Helm and Minikube..."
+brew install minikube helm
+
+# 3. Install SDKMAN and Java 21 LTS
+echo "-> Installing SDKMAN and Java 21..."
+curl -s "https://get.sdkman.io?rcupdate=false" | bash
+
+# Load SDKMAN into the current shell session
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# Install the specific Java version
+sdk install java 21.0.2-tem
+
+echo "------------------------------------------"
+echo " Setup completed successfully!"
+echo " Please close and reopen this terminal, or run: source ~/.zshrc"
+echo "=========================================="
