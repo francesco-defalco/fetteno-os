@@ -6,6 +6,7 @@ base-image: ghcr.io/ublue-os/bluefin-dx
 
 modules:
   # 1. CUSTOM FILES
+  # Injects custom scripts, systemd services, and GNOME schema overrides
   - type: files
     files:
       - source: usr
@@ -14,6 +15,7 @@ modules:
         destination: /etc
 
   # 2. SYSTEM PACKAGES
+  # Installs native Fedora packages required for system utilities
   - type: rpm-ostree
     install:
       - bpftrace
@@ -32,13 +34,22 @@ modules:
       - rsms-inter-fonts
       - google-roboto-fonts
 
-  # 3. THINKPAD BATTERY SERVICE
+  # 3. SET EXECUTABLE PERMISSIONS
+  # Ensures the post-installation setup script can be executed by the user
+  - type: script
+    snippets:
+      - |
+        chmod +x /usr/bin/fetteno-setup
+
+  # 4. THINKPAD BATTERY SERVICE
+  # Enables the battery threshold manager on system boot
   - type: systemd
     system:
       enabled:
         - thinkpad-battery-manager.service
 
-  # 4. FLATPAK APPLICATIONS
+  # 5. FLATPAK APPLICATIONS
+  # Installs GUI applications directly into the system scope
   - type: default-flatpaks
     configurations:
       - scope: system
