@@ -32,23 +32,13 @@ modules:
       - rsms-inter-fonts
       - google-roboto-fonts
 
-  # 3. CUSTOM SCRIPTS (Inline Snippet)
-  - type: script
-    snippets:
-      - |
-        echo "=== Installing Microsoft Core Fonts ==="
-        FEDORA_VERSION=$(rpm -E %fedora)
-        curl -sLo /etc/yum.repos.d/dawid-mscorefonts.repo "https://copr.fedorainfracloud.org/coprs/dawid/mscorefonts/repo/fedora-${FEDORA_VERSION}/dawid-mscorefonts-fedora-${FEDORA_VERSION}.repo"
-        rpm-ostree install mscore-fonts
-        echo "=== Microsoft Fonts installed successfully! ==="
-
-  # 4. THINKPAD BATTERY SERVICE
+  # 3. THINKPAD BATTERY SERVICE
   - type: systemd
     system:
       enabled:
         - thinkpad-battery-manager.service
 
-  # 5. FLATPAK APPLICATIONS
+  # 4. FLATPAK APPLICATIONS
   - type: default-flatpaks
     configurations:
       - scope: system
