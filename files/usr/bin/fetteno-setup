@@ -9,20 +9,22 @@ echo "-> Installing Microsoft Fonts..."
 brew tap colindean/fonts-nonfree
 brew install font-microsoft-core-fonts
 
-# 2. Install Kubernetes and Dev tools via Homebrew
-echo "-> Installing Helm and Minikube..."
-brew install minikube helm
+# 2. Install Dev tools and isolated Python via Homebrew
+# Added 'python' to the brew list for a safe, user-space development environment
+echo "-> Installing Python, Helm, and Minikube..."
+brew install minikube helm python
 
-# 3. Install SDKMAN and Java 21 LTS
-echo "-> Installing SDKMAN and Java 21..."
+# 3. Install SDKMAN, Java 21 LTS, and Maven
+echo "-> Installing SDKMAN, Java 21, and Maven..."
 curl -s "https://get.sdkman.io?rcupdate=false" | bash
 
 # Load SDKMAN into the current shell session
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-# Install the specific Java version
+# Install the specific Java version and Maven
 sdk install java 21.0.2-tem
+sdk install maven
 
 echo "------------------------------------------"
 echo " Setup completed successfully!"
