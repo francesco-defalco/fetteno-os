@@ -6,7 +6,6 @@ base-image: ghcr.io/ublue-os/bluefin-dx
 
 modules:
   # 1. CUSTOM FILES
-  # This module must run first so the systemd service can find the battery script
   - type: files
     files:
       - source: usr
@@ -15,7 +14,6 @@ modules:
         destination: /etc
 
   # 2. SYSTEM PACKAGES
-  # Installing essential CLI tools and dependencies
   - type: rpm-ostree
     install:
       - bpftrace
@@ -34,21 +32,23 @@ modules:
       - rsms-inter-fonts
       - google-roboto-fonts
 
-  # 3. CUSTOM SCRIPTS
-  # Execute bash scripts to install third-party repos (e.g., Microsoft Fonts)
+  # 3. CUSTOM SCRIPTS (Inline Snippet)
   - type: script
-    scripts:
-      - install-ms-fonts.sh
+    snippets:
+      - |
+        echo "=== Installing Microsoft Core Fonts ==="
+        FEDORA_VERSION=$(rpm -E %fedora)
+        curl -sLo /etc/yum.repos.d/dawid-mscorefonts.repo "https://copr.fedorainfracloud.org/coprs/dawid/mscorefonts/repo/fedora-${FEDORA_VERSION}/dawid-mscorefonts-fedora-${FEDORA_VERSION}.repo"
+        rpm-ostree install mscore-fonts
+        echo "=== Microsoft Fonts installed successfully! ==="
 
   # 4. THINKPAD BATTERY SERVICE
-  # Enable the custom systemd service on boot
   - type: systemd
     system:
       enabled:
         - thinkpad-battery-manager.service
 
   # 5. FLATPAK APPLICATIONS
-  # Browsers, IDEs, and GUI apps installed securely in user space
   - type: default-flatpaks
     configurations:
       - scope: system
