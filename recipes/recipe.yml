@@ -3,8 +3,7 @@ description: My Bluefin-DX development workstation for ThinkPad P14s
 image-version: latest
 
 # Using the official GNOME Developer Experience image
-base-image: ghcr.io/ublue-os/bluefin-dx
-
+base-image: ghcr.io/ublue-os/cosmic-atomic-main
 modules:
   # 1. CUSTOM FILES
   # Injects custom scripts, systemd services, and GNOME schema overrides
