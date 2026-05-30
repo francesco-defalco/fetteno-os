@@ -47,13 +47,6 @@ modules:
       enabled:
         - thinkpad-battery-manager.service
 
-  # 5. GNOME EXTENSIONS
-  # Only using highly maintained extensions to replicate the COSMIC layout
-  - type: gnome-extensions
-    install:
-      - 5090 # Space Bar: Replaces "Activities" with workspace numbers
-      - 3843 # Just Perfection: Hides legacy UI elements
-
   # 6. FLATPAK APPLICATIONS
   # Installs GUI applications directly into the system scope
   - type: default-flatpaks
