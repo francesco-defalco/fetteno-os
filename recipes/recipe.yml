@@ -5,15 +5,14 @@ image-version: latest
 # Using the official GNOME Developer Experience image
 base-image: ghcr.io/ublue-os/bluefin-dx
 
-modules:
-  # 1. CUSTOM FILES
+# 1. CUSTOM FILES
   # Injects custom scripts, systemd services, and GNOME schema overrides
   - type: files
     files:
       - source: usr
         destination: /usr
-      - source: etc
-        destination: /etc
+      
+      # (Le righe sottostanti relative a "etc" sono state rimosse)
 
   # 2. SYSTEM PACKAGES
   # Installs native Fedora packages required for system utilities
