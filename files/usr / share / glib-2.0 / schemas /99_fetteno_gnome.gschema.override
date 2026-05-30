@@ -1,0 +1,34 @@
+# --- 1. DISABLE GNOME ANIMATIONS ---
+# Disables all UI animations to make the system instantly responsive
+[org.gnome.desktop.interface]
+enable-animations=false
+
+# --- 2. EXTERNAL MONITOR BRIGHTNESS SHORTCUTS ---
+# Register custom keybindings for ddcutil
+[org.gnome.settings-daemon.plugins.media-keys]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/']
+
+[org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/]
+name='Decrease External Brightness'
+command='ddcutil setvcp 10 - 5'
+binding='<Primary>F5'
+
+[org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/]
+name='Increase External Brightness'
+command='ddcutil setvcp 10 + 5'
+binding='<Primary>F6'
+
+# --- 3. COSMIC TOP BAR LAYOUT ---
+# Just Perfection: Hide the legacy application name and activities button
+[org.gnome.shell.extensions.just-perfection]
+app-menu=false
+activities-button=false
+
+# Space Bar: Configure the workspace numbers to behave like COSMIC
+[org.gnome.shell.extensions.space-bar.behavior]
+show-empty-workspaces=false
+smart-workspace-names=false
+
+[org.gnome.shell.extensions.space-bar.appearance]
+# Removes the background pill from the active workspace for a flatter look
+active-workspace-background=false
