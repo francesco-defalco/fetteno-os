@@ -33,6 +33,11 @@ modules:
       - gpaste-ui
       - rsms-inter-fonts
       - google-roboto-fonts
+      - zsh-syntax-highlighting
+      - zsh-autosuggestions
+      - zoxide
+      - fzf
+      - bat
 
   # 3. SET EXECUTABLE PERMISSIONS
   # Ensures the post-installation setup script can be executed by the user
