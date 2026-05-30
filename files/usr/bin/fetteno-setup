@@ -6,7 +6,6 @@ echo "=========================================="
 
 # 0. Enable Developer Groups (Docker, Virtualization, etc.)
 echo "-> Enabling Developer Mode permissions..."
-# Verrà richiesta la password per i permessi di amministratore
 sudo ujust dx-group
 
 # 1. Install Microsoft Core Fonts safely via Homebrew
@@ -22,15 +21,33 @@ brew install minikube helm python
 echo "-> Installing SDKMAN, Java 21, and Maven..."
 curl -s "https://get.sdkman.io?rcupdate=false" | bash
 
-# Load SDKMAN into the current shell session
+# Load SDKMAN into the current shell session for immediate use
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-# Install the specific Java version and Maven
 sdk install java 21.0.2-tem
 sdk install maven
 
+# 4. Apply automated fixes for Zsh environment
+echo "-> Applying Zsh terminal configurations..."
+
+# Add Homebrew to PATH if not already present
+if ! grep -q "brew shellenv" ~/.zshrc; then
+    echo 'eval "$(/var/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.zshrc
+fi
+
+# Add SDKMAN initialization if not already present
+if ! grep -q "SDKMAN_DIR" ~/.zshrc; then
+    echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc
+    echo '[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"' >> ~/.zshrc
+fi
+
+# Fix SDKMAN batcat dependency warning
+if ! grep -q 'alias batcat="cat"' ~/.zshrc; then
+    echo 'alias batcat="cat"' >> ~/.zshrc
+fi
+
 echo "------------------------------------------"
 echo " Setup completed successfully!"
-echo " Please close and reopen this terminal, or run: source ~/.zshrc"
+echo " Please log out and log back in to apply all changes."
 echo "=========================================="
