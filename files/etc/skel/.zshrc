@@ -20,8 +20,13 @@ eval "$(starship init zsh)"
 # Enable zoxide
 eval "$(zoxide init zsh)"
 
-# Replace standard cat with bat
+# Replace standard 'cat' with 'bat' for syntax highlighting
 alias cat="bat"
+# Fix SDKMAN looking for Debian's batcat
+alias batcat="bat"
+
+# Enable advanced FZF search bindings (Fedora standard path)
+source /usr/share/fzf/shell/key-bindings.zsh
 
 # Enable advanced FZF search in history and files
 source /usr/share/fzf/shell/key-bindings.zsh
