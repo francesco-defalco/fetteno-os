@@ -2,19 +2,18 @@ name: fetteno-os
 description: My Bluefin-DX development workstation for ThinkPad P14s
 image-version: latest
 
-# Using the official GNOME Developer Experience image
-base-image: ghcr.io/ublue-os/cosmic-atomic-main
+# Ritorno all'immagine ufficiale di Bluefin per sviluppatori
+base-image: ghcr.io/ublue-os/bluefin-dx
+
 modules:
   # 1. CUSTOM FILES
-  # Injects custom scripts, systemd services, and GNOME schema overrides
+  # Inietta script e override per GNOME
   - type: files
     files:
       - source: usr
         destination: /usr
 
   # 2. SYSTEM PACKAGES
-  # Installs native Fedora packages required for system utilities
-  # Note: Zsh and Starship are already included and optimized by Bluefin-DX
   - type: rpm-ostree
     install:
       - bpftrace
@@ -33,22 +32,28 @@ modules:
       - rsms-inter-fonts
       - google-roboto-fonts
 
-  # 3. SET EXECUTABLE PERMISSIONS
-  # Ensures the post-installation setup script can be executed by the user
+  # 3. SCRIPTS E PERMESSI
+  # Rende eseguibile il setup e compila le nuove regole di GNOME (animazioni disattivate)
   - type: script
     snippets:
       - |
         chmod +x /usr/bin/fetteno-setup
+        glib-compile-schemas /usr/share/glib-2.0/schemas/
 
   # 4. THINKPAD BATTERY SERVICE
-  # Enables the battery threshold manager on system boot
   - type: systemd
     system:
       enabled:
         - thinkpad-battery-manager.service
 
+  # 5. GNOME EXTENSIONS
+  # Installa le estensioni a livello di sistema
+  - type: gnome-extensions
+    install:
+      - 5090 # Space Bar: Numeri dei workspace
+      - 3843 # Just Perfection: Personalizzazione estrema dell'interfaccia
+
   # 6. FLATPAK APPLICATIONS
-  # Installs GUI applications directly into the system scope
   - type: default-flatpaks
     configurations:
       - scope: system
