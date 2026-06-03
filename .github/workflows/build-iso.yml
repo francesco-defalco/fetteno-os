@@ -8,8 +8,7 @@ jobs:
     steps:
       - name: Install BlueBuild CLI
         run: |
-          curl -L https://github.com/blue-build/cli/releases/latest/download/bluebuild-x86_64-unknown-linux-gnu.tar.gz | tar -xzf -
-          sudo mv bluebuild /usr/local/bin/
+          docker run --pull always --rm ghcr.io/blue-build/cli:latest-installer | sudo bash
 
       - name: Generate ISO
         run: |
