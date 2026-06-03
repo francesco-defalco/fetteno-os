@@ -1,35 +1,22 @@
 name: Build ISO
 on:
   workflow_dispatch:
-    inputs:
-      recipe:
-        description: 'The recipe file to build the ISO for'
-        required: true
-        default: 'recipe.yml'
-        type: string
 
 jobs:
   build-iso:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Setup BlueBuild
-        uses: blue-build/setup-action@v3
-        with:
-          cli_version: v0.9.0
+      - name: Install BlueBuild CLI
+        run: |
+          curl -L https://github.com/blue-build/cli/releases/latest/download/bluebuild-x86_64-unknown-linux-gnu.tar.gz | tar -xzf -
+          sudo mv bluebuild /usr/local/bin/
 
       - name: Generate ISO
         run: |
-          bluebuild generate-iso recipes/${{ inputs.recipe }}
+          sudo bluebuild generate-iso --iso-name fetteno-os.iso image ghcr.io/francesco-defalco/fetteno-os:latest
 
       - name: Upload ISO
         uses: actions/upload-artifact@v4
         with:
           name: fetteno-os-iso
-          path: "*.iso"
+          path: ./*.iso
