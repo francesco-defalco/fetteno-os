@@ -15,7 +15,7 @@ jobs:
           sudo bluebuild generate-iso --iso-name fetteno-os.iso image ghcr.io/francesco-defalco/fetteno-os:latest
 
       - name: Upload ISO
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fetteno-os-iso
           path: ./*.iso
