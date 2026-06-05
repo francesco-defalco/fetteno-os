@@ -26,11 +26,13 @@ modules:
       - signon-ui
       
   # 3. SCRIPTS & PERMISSIONS
-  # Make the setup script executable and inject global Zsh keybindings
+  # Make the setup and brightness scripts executable, and inject global Zsh keybindings
   - type: script
     snippets:
       - |
+        # Grant execution permissions to custom system scripts
         chmod +x /usr/bin/fetteno-setup
+        chmod +x /usr/bin/fetteno-brightness
         
         echo "Applying Zsh keyboard shortcuts for Fetteno-OS..."
         cat << 'EOF' >> /etc/zshrc
