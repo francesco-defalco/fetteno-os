@@ -26,7 +26,7 @@ modules:
       - signon-ui
       
   # 3. SCRIPTS & PERMISSIONS
-  # Make the setup script executable, inject global Zsh keybindings, and install Antigravity
+  # Make the setup script executable and inject global Zsh keybindings
   - type: script
     snippets:
       - |
@@ -40,40 +40,6 @@ modules:
         bindkey '^[[1;5C' forward-word
         bindkey '^[[3;5~' kill-word
         bindkey '^H' backward-kill-word
-        EOF
-
-        echo "Installing Google Antigravity..."
-        
-        # 1. Install the official CLI (agy)
-        curl -fsSL https://antigravity.google/cli/install.sh | bash
-        
-        # Move the CLI to the global bin directory to make it immutable and accessible
-        if [ -f /root/.local/bin/agy ]; then
-          mv /root/.local/bin/agy /usr/bin/agy
-          chmod +x /usr/bin/agy
-        fi
-
-        # 2. Download and extract the graphical interface (Desktop App)
-        # Note: Using the direct URL for the Linux x64 tarball
-        mkdir -p /usr/lib/antigravity
-        wget -qO /tmp/antigravity.tar.gz "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/1.23.2-4781536860569600/linux-x64/Antigravity.tar.gz"
-        tar -xzf /tmp/antigravity.tar.gz -C /usr/lib/antigravity --strip-components=1
-        rm /tmp/antigravity.tar.gz
-
-        # 3. Create a global symlink for the system executable
-        ln -sf /usr/lib/antigravity/antigravity /usr/bin/antigravity
-
-        # 4. Insert the icon and shortcut into the KDE system menu
-        mkdir -p /usr/share/applications
-        cat << 'EOF' > /usr/share/applications/antigravity.desktop
-        [Desktop Entry]
-        Name=Google Antigravity
-        Comment=Google AI Agent Platform
-        Exec=/usr/bin/antigravity --no-sandbox %F
-        Icon=applications-development
-        Type=Application
-        Categories=Development;IDE;
-        Terminal=false
         EOF
 
   # 4. FLATPAK APPLICATIONS
