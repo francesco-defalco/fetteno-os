@@ -22,7 +22,7 @@ modules:
 
   # 3. THINKPAD BATTERY SERVICE
   # Enable the custom systemd service for the ThinkPad battery manager
-  - type: systemd
-    system:
-      enabled:
-        - thinkpad-battery-manager.service
+  # - type: systemd
+  #  system:
+  #    enabled:
+  #      - thinkpad-battery-manager.service
