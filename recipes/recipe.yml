@@ -25,8 +25,8 @@ modules:
       - signon-plugin-oauth2
       - signon-ui
       
-  # 3. SCRIPTS & PERMISSIONS
-  # Make the setup and brightness scripts executable, and inject global Zsh keybindings
+  # 3. SCRIPTS, PERMISSIONS & SYSTEM DEFAULTS
+  # Apply execution permissions, Zsh keybindings, and default KDE shortcuts
   - type: script
     snippets:
       - |
@@ -34,6 +34,7 @@ modules:
         chmod +x /usr/bin/fetteno-setup
         chmod +x /usr/bin/fetteno-brightness
         
+        # --- Zsh Keybindings ---
         echo "Applying Zsh keyboard shortcuts for Fetteno-OS..."
         cat << 'EOF' >> /etc/zshrc
 
@@ -44,18 +45,29 @@ modules:
         bindkey '^H' backward-kill-word
         EOF
 
-  # 4. FLATPAK APPLICATIONS
-  # Automatically install WhatsApp for Linux natively
-  - type: default-flatpaks
-    configurations:
-      - scope: system
-        install:
-          - com.github.eneshecan.WhatsAppForLinux
-
-  # 5. THINKPAD BATTERY SERVICE
-  # Enable the custom systemd service for the ThinkPad battery manager
-  # (Uncomment the lines below by removing the # to activate it)
-  # - type: systemd
-  #   system:
-  #     enabled:
-  #       - thinkpad-battery-manager.service
+        # --- KDE Plasma Global Shortcuts for Brightness ---
+        echo "Creating background desktop services for Fetteno Brightness..."
+        
+        # Create an invisible app for Brightness Up
+        cat << 'EOF' > /usr/share/applications/fetteno-brightness-up.desktop
+        [Desktop Entry]
+        Type=Application
+        Name=Fetteno Brightness Up
+        Exec=/usr/bin/fetteno-brightness up
+        Terminal=false
+        NoDisplay=true
+        EOF
+        
+        # Create an invisible app for Brightness Down
+        cat << 'EOF' > /usr/share/applications/fetteno-brightness-down.desktop
+        [Desktop Entry]
+        Type=Application
+        Name=Fetteno Brightness Down
+        Exec=/usr/bin/fetteno-brightness down
+        Terminal=false
+        NoDisplay=true
+        EOF
+        
+        echo "Registering default KDE global shortcuts (Ctrl+F5 / Ctrl+F6)..."
+        mkdir -p /etc/xdg
+        cat << 'EOF' >> /etc/xdg/kglobalshortcutsrc
