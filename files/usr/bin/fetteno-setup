@@ -5,43 +5,57 @@ echo "  INITIALIZING FETTENO-OS DEV ENVIRONMENT"
 echo "=========================================="
 
 # 1. Enable Developer Groups (Docker, Virtualization, etc.)
-# Questo comando di Aurora-DX ti aggiunge ai gruppi necessari per usare container e VM senza sudo.
-echo "-> Enabling Developer Mode permissions (ti verrà chiesta la password)..."
+echo "-> Enabling Developer Mode permissions (sudo required)..."
 sudo ujust dx-group
 
-# 2. Install Dev tools (Kubernetes & Python) via Homebrew
-echo "-> Installing Python, Helm, and Minikube..."
-brew install minikube helm python
+# 2. Install Dev tools (Kubernetes, Python, Go) via Homebrew
+echo "-> Installing Python, Go, Helm, and Minikube..."
+brew install minikube helm python go
 
-# 3. Install SDKMAN, Java 21 LTS, and Maven
+# 3. Install Rust via rustup (Official standard)
+echo "-> Installing Rust toolchain..."
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source "$HOME/.cargo/env"
+
+# 4. Install SDKMAN, Java 21 LTS, and Maven
 echo "-> Installing SDKMAN, Java 21 LTS, and Maven..."
 export SDKMAN_DIR="$HOME/.sdkman"
 curl -s "https://get.sdkman.io?rcupdate=false" | bash
-
-# Carica SDKMAN nella sessione corrente per poter lanciare subito i comandi 'sdk'
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 echo "-> Downloading Java and Maven..."
 sdk install java 21.0.2-tem
 sdk install maven
 
-# 4. Apply automated fixes for Zsh environment
+# 5. Apply automated fixes for Zsh environment
 echo "-> Applying Zsh terminal configurations..."
 
-# Aggiunge Homebrew al PATH (se per caso il profilo globale non l'ha già caricato)
+# Add Homebrew to PATH
 if ! grep -q "brew shellenv" ~/.zshrc; then
     echo -e '\n# Homebrew' >> ~/.zshrc
     echo 'eval "$(/var/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.zshrc
 fi
 
-# Aggiunge l'inizializzazione di SDKMAN al file Zsh
+# Add Rust to PATH
+if ! grep -q ".cargo/env" ~/.zshrc; then
+    echo -e '\n# Rust' >> ~/.zshrc
+    echo 'source "$HOME/.cargo/env"' >> ~/.zshrc
+fi
+
+# Add SDKMAN init
 if ! grep -q "SDKMAN_DIR" ~/.zshrc; then
     echo -e '\n# SDKMAN' >> ~/.zshrc
     echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc
     echo '[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"' >> ~/.zshrc
 fi
 
-# Fix per il fastidioso warning di dipendenza "batcat" che a volte dà SDKMAN
+# Add Local Bin to PATH (Useful for custom user scripts)
+if ! grep -q "$HOME/.local/bin" ~/.zshrc; then
+    echo -e '\n# Local Binaries' >> ~/.zshrc
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+fi
+
+# SDKMAN batcat dependency warning fix
 if ! grep -q 'alias batcat="cat"' ~/.zshrc; then
     echo -e '\n# SDKMAN fix' >> ~/.zshrc
     echo 'alias batcat="cat"' >> ~/.zshrc
@@ -49,5 +63,6 @@ fi
 
 echo "------------------------------------------"
 echo " Setup completed successfully!"
-echo " Riavvia il terminale (o fai logout/login) per applicare le modifiche."
+echo " Python, Go, Rust, and Java are ready."
+echo " Please log out and log back in to apply all changes."
 echo "=========================================="
