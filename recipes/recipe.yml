@@ -1,67 +1,28 @@
 name: fetteno-os
-description: My Bluefin-DX development workstation for ThinkPad P14s
+description: My pure Aurora-DX workstation for ThinkPad P14s with custom scripts
 image-version: latest
 
-# Ritorno all'immagine ufficiale di Bluefin per sviluppatori
-base-image: ghcr.io/ublue-os/bluefin-dx
+# Base image: Official Aurora developer image
+base-image: ghcr.io/ublue-os/aurora-dx
 
 modules:
   # 1. CUSTOM FILES
-  # Inietta script e override per GNOME
+  # Inject custom scripts and system overrides into /usr
   - type: files
     files:
       - source: usr
         destination: /usr
 
-  # 2. SYSTEM PACKAGES
-  - type: rpm-ostree
-    install:
-      - bpftrace
-      - bcc-tools
-      - brightnessctl
-      - ddcutil
-      - flameshot
-      - gawk
-      - inotify-tools
-      - redshift
-      - vdpauinfo
-      - libva-utils
-      - ffmpeg
-      - gpaste
-      - gpaste-ui
-      - rsms-inter-fonts
-      - google-roboto-fonts
-
-  # 3. SCRIPTS E PERMESSI
-  # Rende eseguibile il setup e compila le nuove regole di GNOME (animazioni disattivate)
+  # 2. SCRIPTS & PERMISSIONS
+  # Make the custom setup script executable
   - type: script
     snippets:
       - |
         chmod +x /usr/bin/fetteno-setup
-        glib-compile-schemas /usr/share/glib-2.0/schemas/
 
-  # 4. THINKPAD BATTERY SERVICE
+  # 3. THINKPAD BATTERY SERVICE
+  # Enable the custom systemd service for the ThinkPad battery manager
   - type: systemd
     system:
       enabled:
         - thinkpad-battery-manager.service
-
-  # 5. GNOME EXTENSIONS
-  # Installa le estensioni a livello di sistema
-  - type: gnome-extensions
-    install:
-      - 5090 # Space Bar: Numeri dei workspace
-      - 3843 # Just Perfection: Personalizzazione estrema dell'interfaccia
-
-  # 6. FLATPAK APPLICATIONS
-  - type: default-flatpaks
-    configurations:
-      - scope: system
-        install:
-          - com.google.Chrome
-          - com.brave.Browser
-          - com.opera.Opera
-          - com.visualstudio.code
-          - org.videolan.VLC
-          - com.protonvpn.www
-          - com.mattjakeman.ExtensionManager
