@@ -78,67 +78,10 @@ echo "-> Installing Google Antigravity CLI..."
 curl -fsSL https://antigravity.google/cli/install.sh | bash
 echo "-> CLI installed successfully!"
 
-echo "-> Downloading Antigravity IDE from official servers..."
-# Impostiamo l'URL generico per l'ultima versione Linux di Antigravity
-IDE_URL="https://antigravity.google/download/linux-x64/latest.tar.gz"
-TEMP_TARBALL="/tmp/antigravity-ide.tar.gz"
-
-# Usa curl per scaricare il file. L'opzione -f fa fallire elegantemente il comando se l'URL non è raggiungibile.
-if curl -fL "$IDE_URL" -o "$TEMP_TARBALL"; then
-    echo "-> Download completed. Extracting files..."
-    
-    mkdir -p "$HOME/.local/opt/antigravity"
-    tar -xzf "$TEMP_TARBALL" -C "$HOME/.local/opt/antigravity" --strip-components=1
-    rm "$TEMP_TARBALL"
-    
-    echo "-> Creating application menu shortcut..."
-    mkdir -p "$HOME/.local/share/applications"
-    
-    cat << EOF > "$HOME/.local/share/applications/antigravity.desktop"
-[Desktop Entry]
-Name=Google Antigravity
-Comment=Google AI Agent Platform
-Exec=$HOME/.local/opt/antigravity/antigravity --no-sandbox %F
-Icon=applications-development
-Type=Application
-Categories=Development;IDE;
-Terminal=false
-EOF
-
-    update-desktop-database "$HOME/.local/share/applications" 2>/dev/null
-    echo "-> Antigravity IDE installed and integrated into the system!"
-
-else
-    echo "-> WARNING: Could not download the IDE directly from the web."
-    echo "-> Looking for a manual download in the Downloads folder..."
-    
-    # Fallback: se il download fallisce, cerca l'archivio precedentemente scaricato a mano
-    IDE_TARBALL=$(ls $HOME/Downloads/antigravity*.tar.gz $HOME/Scaricati/antigravity*.tar.gz 2>/dev/null | head -n 1)
-
-    if [ -n "$IDE_TARBALL" ]; then
-        echo "-> Found local IDE archive: $IDE_TARBALL"
-        mkdir -p "$HOME/.local/opt/antigravity"
-        tar -xzf "$IDE_TARBALL" -C "$HOME/.local/opt/antigravity" --strip-components=1
-        
-        mkdir -p "$HOME/.local/share/applications"
-        cat << EOF > "$HOME/.local/share/applications/antigravity.desktop"
-[Desktop Entry]
-Name=Google Antigravity
-Comment=Google AI Agent Platform
-Exec=$HOME/.local/opt/antigravity/antigravity --no-sandbox %F
-Icon=applications-development
-Type=Application
-Categories=Development;IDE;
-Terminal=false
-EOF
-        update-desktop-database "$HOME/.local/share/applications" 2>/dev/null
-        echo "-> Antigravity IDE installed using local archive!"
-    else
-        echo "-> ERROR: IDE archive not found locally either."
-        echo "-> To install the IDE manually, download the .tar.gz file from the Google website,"
-        echo "-> save it in your Downloads folder, and run this script again."
-    fi
-fi
+echo "-> Installing Google Antigravity IDE via Homebrew..."
+brew tap ublue-os/tap
+brew install --cask antigravity-ide-linux
+echo "-> Antigravity IDE installed successfully!"
 
 echo "------------------------------------------"
 echo " Setup completed successfully!"
