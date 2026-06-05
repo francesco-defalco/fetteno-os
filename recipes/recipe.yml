@@ -13,16 +13,39 @@ modules:
       - source: usr
         destination: /usr
 
-  # 2. SCRIPTS & PERMISSIONS
-  # Make the custom setup script executable
+  # 2. SYSTEM PACKAGES
+  # Install hardware control packages and required modules for Google Drive integration
+  - type: rpm-ostree
+    install:
+      - brightnessctl
+      - ddcutil
+      - kio-gdrive
+      - kaccounts-integration
+      - kaccounts-providers
+      - signon-plugin-oauth2
+      - signon-ui
+      
+  # 3. SCRIPTS & PERMISSIONS
+  # Make the setup script executable and inject global Zsh keybindings
   - type: script
     snippets:
       - |
         chmod +x /usr/bin/fetteno-setup
+        
+        echo "Applying Zsh keyboard shortcuts for Fetteno-OS..."
+        cat << 'EOF' >> /etc/zshrc
 
-  # 3. THINKPAD BATTERY SERVICE
+        # --- Fetteno-OS keyboard shortcuts ---
+        bindkey '^[[1;5D' backward-word
+        bindkey '^[[1;5C' forward-word
+        bindkey '^[[3;5~' kill-word
+        bindkey '^H' backward-kill-word
+        EOF
+
+  # 4. THINKPAD BATTERY SERVICE
   # Enable the custom systemd service for the ThinkPad battery manager
+  # (Uncomment the lines below by removing the # to activate it)
   # - type: systemd
-  #  system:
-  #    enabled:
-  #      - thinkpad-battery-manager.service
+  #   system:
+  #     enabled:
+  #       - thinkpad-battery-manager.service
