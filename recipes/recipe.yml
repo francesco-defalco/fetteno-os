@@ -41,6 +41,12 @@ modules:
         bindkey '^[[3;5~' kill-word
         bindkey '^H' backward-kill-word
         EOF
+  
+  - type: default-flatpaks
+    configurations:
+      - scope: system
+        install:
+          - com.github.eneshecan.WhatsAppForLinux
 
   # 4. THINKPAD BATTERY SERVICE
   # Enable the custom systemd service for the ThinkPad battery manager
