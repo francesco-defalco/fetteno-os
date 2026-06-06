@@ -26,7 +26,7 @@ modules:
       - signon-ui
       
   # 3. SCRIPTS, PERMISSIONS & SYSTEM DEFAULTS
-  # Apply execution permissions, Zsh keybindings, defaults, and OS debloat
+  # Apply execution permissions, Zsh keybindings, defaults, OS debloat, and Wayland fixes
   - type: script
     snippets:
       - |
@@ -99,83 +99,4 @@ modules:
             fi
             
             if [ "$STATE" != "$LAST_STATE" ]; then
-                kwriteconfig6 --file kdeglobals --group General --key font "Noto Sans,$FONT_SIZE,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
-                kwriteconfig6 --file kdeglobals --group General --key menuFont "Noto Sans,$FONT_SIZE,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
-                kwriteconfig6 --file kdeglobals --group General --key toolBarFont "Noto Sans,$FONT_SIZE,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
-                
-                systemctl --user restart plasma-plasmashell.service
-                
-                LAST_STATE=$STATE
-            fi
-        }
-        
-        update_fonts
-        
-        udevadm monitor --subsystem-match=drm | while read -r line; do
-            sleep 2
-            update_fonts
-        done
-        EOF
-        
-        chmod +x /usr/bin/fetteno-autofont
-
-        echo "Registering Fetteno Auto Font Systemd User Service..."
-        mkdir -p /usr/lib/systemd/user
-        cat << 'EOF' > /usr/lib/systemd/user/fetteno-autofont.service
-        [Unit]
-        Description=Fetteno Auto Font Switcher Daemon
-        After=plasma-workspace.target
-        
-        [Service]
-        ExecStart=/usr/bin/fetteno-autofont
-        Restart=always
-        
-        [Install]
-        WantedBy=default.target
-        EOF
-        
-        systemctl --global enable fetteno-autofont.service
-
-        # --- OS Debloat: Disable Heavy KDE Services Globally ---
-        echo "Disabling Baloo (File Indexer) globally..."
-        mkdir -p /etc/xdg
-        cat << 'EOF' > /etc/xdg/baloofilerc
-        [Basic]
-        Indexing-Enabled=false
-        EOF
-
-        echo "Disabling Akonadi Server globally..."
-        mkdir -p /etc/xdg/akonadi
-        cat << 'EOF' > /etc/xdg/akonadi/akonadiserverrc
-        [%General]
-        Driver=QSQLITE
-
-        [QMYSQL]
-        StartServer=false
-
-        [QSQLITE]
-        StartServer=false
-        EOF
-        
-        echo "Disabling KDE Connect autostart system-wide..."
-        mkdir -p /etc/xdg/autostart
-        cat << 'EOF' > /etc/xdg/autostart/org.kde.kdeconnect.daemon.desktop
-        [Desktop Entry]
-        Hidden=true
-        EOF
-
-  # 4. FLATPAK APPLICATIONS
-  # Automatically install WhatsApp for Linux natively
-  # - type: default-flatpaks
-  #  configurations:
-  #    - scope: system
-  #      install:
-  #        - com.github.eneshecan.WhatsAppForLinux
-
-  # 5. THINKPAD BATTERY SERVICE
-  # Enable the custom systemd service for the ThinkPad battery manager
-  # (Uncomment the lines below by removing the # to activate it)
-  # - type: systemd
-  #   system:
-  #     enabled:
-  #       - thinkpad-battery-manager.service
+                kwriteconfig6 --file k
