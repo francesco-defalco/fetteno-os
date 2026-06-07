@@ -2,19 +2,34 @@ name: fetteno-os-gnome
 description: My Bluefin-DX development workstation for ThinkPad P14s
 image-version: latest
 
-# Base image: Official Aurora developer image
 base-image: ghcr.io/ublue-os/aurora-dx
 
 modules:
   # 1. CUSTOM FILES
-  # Inject custom scripts and system overrides into /usr
   - type: files
     files:
       - source: usr
         destination: /usr
 
-  # 2. SYSTEM PACKAGES
-  # Install hardware control packages and required modules for Google Drive integration
+  # 2. REPOSITORY PREPARATION (CachyOS/SCX)
+  - type: copr
+    repos:
+      - bieszczaders/kernel-cachyos
+      - alternate-gentoo/scx
+
+  # 3. KERNEL REPLACEMENT
+  - type: rpm-ostree
+    remove:
+      - kernel
+      - kernel-core
+      - kernel-modules
+      - kernel-modules-core
+      - kernel-modules-extra
+    install:
+      - kernel-cachyos
+      - kernel-cachyos-devel-matched
+
+  # 4. SYSTEM PACKAGES
   - type: rpm-ostree
     install:
       - brightnessctl
@@ -24,150 +39,50 @@ modules:
       - kaccounts-providers
       - signon-plugin-oauth2
       - signon-ui
-      
-  # 3. SCRIPTS, PERMISSIONS & SYSTEM DEFAULTS
-  # Apply execution permissions, Zsh keybindings, defaults, and OS debloat
+      - bpftrace
+      - bcc-tools
+      - flameshot
+      - gawk
+      - inotify-tools
+      - redshift
+      - vdpauinfo
+      - libva-utils
+      - ffmpeg
+      - gpaste
+      - gpaste-ui
+      - rsms-inter-fonts
+      - google-roboto-fonts
+
+  # 5. GNOME EXTENSIONS
+  - type: gnome-extensions
+    install:
+      - 5090 # Space Bar
+      - 3843 # Just Perfection
+
+  # 6. FLATPAK APPLICATIONS
+  - type: default-flatpaks
+    configurations:
+      - scope: system
+        install:
+          - com.google.Chrome
+          - com.brave.Browser
+          - com.opera.Opera
+          - com.visualstudio.code
+          - org.videolan.VLC
+          - com.protonvpn.www
+          - md.obsidian.Obsidian
+          - com.discordapp.Discord
+          - com.mattjakeman.ExtensionManager
+
+  # 7. SCRIPTS AND SERVICES
   - type: script
     snippets:
       - |
-        # Grant execution permissions to custom system scripts
         chmod +x /usr/bin/fetteno-setup
         chmod +x /usr/bin/fetteno-brightness
-        
-        # --- Zsh Keybindings ---
-        echo "Applying Zsh keyboard shortcuts for Fetteno-OS..."
-        cat << 'EOF' >> /etc/zshrc
+        # [Inserisci qui il resto dei tuoi script...]
 
-        # --- Fetteno-OS keyboard shortcuts ---
-        bindkey '^[[1;5D' backward-word
-        bindkey '^[[1;5C' forward-word
-        bindkey '^[[3;5~' kill-word
-        bindkey '^H' backward-kill-word
-        EOF
-
-        # --- KDE Plasma Global Shortcuts for Brightness ---
-        echo "Creating background desktop services for Fetteno Brightness..."
-        
-        cat << 'EOF' > /usr/share/applications/fetteno-brightness-up.desktop
-        [Desktop Entry]
-        Type=Application
-        Name=Fetteno Brightness Up
-        Exec=/usr/bin/fetteno-brightness up
-        Terminal=false
-        NoDisplay=true
-        EOF
-        
-        cat << 'EOF' > /usr/share/applications/fetteno-brightness-down.desktop
-        [Desktop Entry]
-        Type=Application
-        Name=Fetteno Brightness Down
-        Exec=/usr/bin/fetteno-brightness down
-        Terminal=false
-        NoDisplay=true
-        EOF
-        
-        echo "Registering default KDE global shortcuts (Ctrl+F5 / Ctrl+F6)..."
-        mkdir -p /etc/xdg
-        cat << 'EOF' >> /etc/xdg/kglobalshortcutsrc
-        
-        [fetteno-brightness-up.desktop]
-        _k_friendly_name=Fetteno Brightness Up
-        _launch=Ctrl+F6,none,Fetteno Brightness Up
-        
-        [fetteno-brightness-down.desktop]
-        _k_friendly_name=Fetteno Brightness Down
-        _launch=Ctrl+F5,none,Fetteno Brightness Down
-        EOF
-
-        # --- Auto Font Switcher Daemon ---
-        echo "Creating Fetteno Auto Font daemon..."
-        cat << 'EOF' > /usr/bin/fetteno-autofont
-        #!/bin/bash
-        # Font auto-switcher for Fetteno-OS
-        
-        LAST_STATE=""
-        
-        update_fonts() {
-            MONITORS=$(cat /sys/class/drm/*/status 2>/dev/null | grep -c "^connected")
-            
-            if [ "$MONITORS" -gt 1 ]; then
-                STATE="external"
-                FONT_SIZE=10
-            else
-                STATE="laptop"
-                FONT_SIZE=12
-            fi
-            
-            if [ "$STATE" != "$LAST_STATE" ]; then
-                kwriteconfig6 --file kdeglobals --group General --key font "Noto Sans,$FONT_SIZE,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
-                kwriteconfig6 --file kdeglobals --group General --key menuFont "Noto Sans,$FONT_SIZE,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
-                kwriteconfig6 --file kdeglobals --group General --key toolBarFont "Noto Sans,$FONT_SIZE,-1,5,400,0,0,0,0,0,0,0,0,0,0,1"
-                
-                systemctl --user restart plasma-plasmashell.service
-                
-                LAST_STATE=$STATE
-            fi
-        }
-        
-        update_fonts
-        
-        udevadm monitor --subsystem-match=drm | while read -r line; do
-            sleep 2
-            update_fonts
-        done
-        EOF
-        
-        chmod +x /usr/bin/fetteno-autofont
-
-        echo "Registering Fetteno Auto Font Systemd User Service..."
-        mkdir -p /usr/lib/systemd/user
-        cat << 'EOF' > /usr/lib/systemd/user/fetteno-autofont.service
-        [Unit]
-        Description=Fetteno Auto Font Switcher Daemon
-        After=plasma-workspace.target
-        
-        [Service]
-        ExecStart=/usr/bin/fetteno-autofont
-        Restart=always
-        
-        [Install]
-        WantedBy=default.target
-        EOF
-        
-        systemctl --global enable fetteno-autofont.service
-
-        # --- OS Debloat: Disable Heavy KDE Services Globally ---
-        echo "Disabling Baloo (File Indexer) globally..."
-        mkdir -p /etc/xdg
-        cat << 'EOF' > /etc/xdg/baloofilerc
-        [Basic]
-        Indexing-Enabled=false
-        EOF
-
-        echo "Disabling Akonadi Server globally..."
-        mkdir -p /etc/xdg/akonadi
-        cat << 'EOF' > /etc/xdg/akonadi/akonadiserverrc
-        [%General]
-        Driver=QSQLITE
-
-        [QMYSQL]
-        StartServer=false
-
-        [QSQLITE]
-        StartServer=false
-        EOF
-        
-        echo "Disabling KDE Connect autostart system-wide..."
-        mkdir -p /etc/xdg/autostart
-        cat << 'EOF' > /etc/xdg/autostart/org.kde.kdeconnect.daemon.desktop
-        [Desktop Entry]
-        Hidden=true
-        EOF
-
-  # 4. THINKPAD BATTERY SERVICE
-  # Enable the custom systemd service for the ThinkPad battery manager
-  # (Uncomment the lines below by removing the # to activate it)
-  # - type: systemd
-  #   system:
-  #     enabled:
-  #       - thinkpad-battery-manager.service
+  - type: systemd
+    system:
+      enabled:
+        - thinkpad-battery-manager.service
