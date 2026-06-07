@@ -12,20 +12,26 @@ modules:
       - source: usr
         destination: /usr
 
-# 2. KERNEL REPLACEMENT & SYSTEM PACKAGES
-  # Inietta il COPR, rimuove il kernel stock e installa CachyOS e gli strumenti base
+  # 2. KERNEL REPLACEMENT & SYSTEM PACKAGES
   - type: rpm-ostree
     repos:
+      # Inject the community repository for the custom CachyOS kernel
       - https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-%OS_VERSION%/bieszczaders-kernel-cachyos-fedora-%OS_VERSION%.repo
     remove:
+      # Remove the stock Fedora kernel
       - kernel
       - kernel-core
       - kernel-modules
       - kernel-modules-core
       - kernel-modules-extra
+      # Remove packages that strictly depend on the stock kernel
+      - kernel-devel-matched
+      - kmod-v4l2loopback
     install:
+      # Install CachyOS Kernel
       - kernel-cachyos
       - kernel-cachyos-devel-matched
+      # Hardware control and system tools
       - brightnessctl
       - ddcutil
       - kio-gdrive
@@ -174,6 +180,7 @@ modules:
 
   # 4. THINKPAD BATTERY SERVICE
   # Enable the custom systemd service for the ThinkPad battery manager
+  # (Uncomment the lines below by removing the # to activate it)
   # - type: systemd
   #   system:
   #     enabled:
