@@ -12,8 +12,8 @@ modules:
       - source: usr
         destination: /usr
 
-  # 2. KERNEL REPLACEMENT & SYSTEM PACKAGES
-  # Inietta i COPR, rimuove il kernel stock e installa CachyOS e gli strumenti
+# 2. KERNEL REPLACEMENT & SYSTEM PACKAGES
+  # Inietta il COPR, rimuove il kernel stock e installa CachyOS e gli strumenti base
   - type: rpm-ostree
     repos:
       - https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-%OS_VERSION%/bieszczaders-kernel-cachyos-fedora-%OS_VERSION%.repo
@@ -26,7 +26,6 @@ modules:
     install:
       - kernel-cachyos
       - kernel-cachyos-devel-matched
-      - scx-scheds
       - brightnessctl
       - ddcutil
       - kio-gdrive
