@@ -17,7 +17,6 @@ modules:
   - type: rpm-ostree
     repos:
       - https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-%OS_VERSION%/bieszczaders-kernel-cachyos-fedora-%OS_VERSION%.repo
-      - https://copr.fedorainfracloud.org/coprs/alternate-gentoo/scx/repo/fedora-%OS_VERSION%/alternate-gentoo-scx-fedora-%OS_VERSION%.repo
     remove:
       - kernel
       - kernel-core
