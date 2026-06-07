@@ -1,5 +1,5 @@
 name: fetteno-os-aurora-dx
-description: My pure Aurora-DX workstation for ThinkPad P14s with custom scripts
+description: My pure Aurora-DX workstation for ThinkPad P14s with custom scripts and CachyOS optimizations
 image-version: latest
 
 # Base image: Official Aurora developer image
@@ -13,7 +13,28 @@ modules:
       - source: usr
         destination: /usr
 
-  # 2. SYSTEM PACKAGES
+  # 2. CACHYOS & SCX REPOSITORIES (Origami/RakuOS DNA)
+  # Inject the community repositories for the custom kernel and schedulers
+  - type: copr
+    repos:
+      - bieszczaders/kernel-cachyos
+      - alternate-gentoo/scx
+
+  # 3. KERNEL REPLACEMENT (Extreme performance)
+  # Remove the stock Fedora kernel and replace it with the optimized CachyOS version
+  - type: rpm-ostree
+    remove:
+      - kernel
+      - kernel-core
+      - kernel-modules
+      - kernel-modules-core
+      - kernel-modules-extra
+    install:
+      - kernel-cachyos
+      - kernel-cachyos-devel-matched
+      - scx-scheds # BPF extensible schedulers (the heart of CachyOS responsiveness)
+
+  # 4. SYSTEM PACKAGES
   # Install hardware control packages and required modules for Google Drive integration
   - type: rpm-ostree
     install:
@@ -25,7 +46,7 @@ modules:
       - signon-plugin-oauth2
       - signon-ui
       
-  # 3. SCRIPTS, PERMISSIONS & SYSTEM DEFAULTS
+  # 5. SCRIPTS, PERMISSIONS & SYSTEM DEFAULTS
   # Apply execution permissions, Zsh keybindings, defaults, and OS debloat
   - type: script
     snippets:
@@ -144,15 +165,6 @@ modules:
         Indexing-Enabled=false
         EOF
 
-        echo "Disabling Akonadi Server globally..."
-        mkdir -p /etc/xdg/akonadi
-        cat << 'EOF' > /etc/xdg/akonadi/akonadiserverrc
-        [%General]
-        Driver=QSQLITE
-
-        [QMYSQL]
-        StartServer=false
-
         [QSQLITE]
         StartServer=false
         EOF
@@ -164,7 +176,7 @@ modules:
         Hidden=true
         EOF
 
-  # 4. THINKPAD BATTERY SERVICE
+  # 6. THINKPAD BATTERY SERVICE
   # Enable the custom systemd service for the ThinkPad battery manager
   # (Uncomment the lines below by removing the # to activate it)
   # - type: systemd
