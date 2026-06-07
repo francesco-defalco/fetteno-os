@@ -1,0 +1,21 @@
+name: Build ISO
+on:
+  workflow_dispatch:
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install BlueBuild CLI
+        run: |
+          docker run --pull always --rm ghcr.io/blue-build/cli:latest-installer | sudo bash
+
+      - name: Generate ISO
+        run: |
+          sudo bluebuild generate-iso --iso-name fetteno-os.iso image ghcr.io/francesco-defalco/fetteno-os:latest
+
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: fetteno-os-iso
+          path: ./*.iso

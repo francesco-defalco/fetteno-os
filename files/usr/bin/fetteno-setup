@@ -1,53 +1,90 @@
 #!/usr/bin/env bash
 
 echo "=========================================="
-echo "  INITIALIZING FETTENO-OS ENVIRONMENT"
+echo "  INITIALIZING FETTENO-OS DEV ENVIRONMENT"
 echo "=========================================="
 
-# 0. Enable Developer Groups (Docker, Virtualization, etc.)
-echo "-> Enabling Developer Mode permissions..."
+# 1. Enable Developer Groups (Docker, Virtualization, etc.)
+echo "-> Enabling Developer Mode permissions (sudo required)..."
 sudo ujust dx-group
 
-# 1. Install Microsoft Core Fonts safely via Homebrew
-echo "-> Installing Microsoft Fonts..."
-brew tap colindean/fonts-nonfree
-brew install font-microsoft-core-fonts
+# 2. Install Dev tools (Kubernetes, Python, Go) via Homebrew
+echo "-> Installing Python, Go, Helm, and Minikube..."
+brew install minikube helm python go
 
-# 2. Install Dev tools and isolated Python via Homebrew
-echo "-> Installing Python, Helm, and Minikube..."
-brew install minikube helm python
+# 3. Install Rust via rustup (Official standard)
+echo "-> Installing Rust toolchain..."
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source "$HOME/.cargo/env"
 
-# 3. Install SDKMAN, Java 21 LTS, and Maven
-echo "-> Installing SDKMAN, Java 21, and Maven..."
-curl -s "https://get.sdkman.io?rcupdate=false" | bash
-
-# Load SDKMAN into the current shell session for immediate use
+# 4. Install SDKMAN, Java 21 LTS, and Maven
+echo "-> Installing SDKMAN, Java 21 LTS, and Maven..."
 export SDKMAN_DIR="$HOME/.sdkman"
+curl -s "https://get.sdkman.io?rcupdate=false" | bash
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
+echo "-> Downloading Java and Maven..."
 sdk install java 21.0.2-tem
 sdk install maven
 
-# 4. Apply automated fixes for Zsh environment
+# 5. Apply automated fixes for Zsh environment
 echo "-> Applying Zsh terminal configurations..."
 
-# Add Homebrew to PATH if not already present
+# Configure Zsh History
+if ! grep -q "HISTFILE" ~/.zshrc; then
+    echo -e '\n# Zsh History Configuration' >> ~/.zshrc
+    echo 'export HISTFILE="$HOME/.zsh_history"' >> ~/.zshrc
+    echo 'export HISTSIZE=10000' >> ~/.zshrc
+    echo 'export SAVEHIST=10000' >> ~/.zshrc
+    echo 'setopt APPEND_HISTORY' >> ~/.zshrc
+    echo 'setopt SHARE_HISTORY' >> ~/.zshrc
+    echo 'setopt HIST_IGNORE_DUPS' >> ~/.zshrc
+    echo 'setopt HIST_IGNORE_SPACE' >> ~/.zshrc
+fi
+
+# Add Homebrew to PATH
 if ! grep -q "brew shellenv" ~/.zshrc; then
+    echo -e '\n# Homebrew' >> ~/.zshrc
     echo 'eval "$(/var/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.zshrc
 fi
 
-# Add SDKMAN initialization if not already present
+# Add Rust to PATH
+if ! grep -q ".cargo/env" ~/.zshrc; then
+    echo -e '\n# Rust' >> ~/.zshrc
+    echo 'source "$HOME/.cargo/env"' >> ~/.zshrc
+fi
+
+# Add SDKMAN init
 if ! grep -q "SDKMAN_DIR" ~/.zshrc; then
+    echo -e '\n# SDKMAN' >> ~/.zshrc
     echo 'export SDKMAN_DIR="$HOME/.sdkman"' >> ~/.zshrc
     echo '[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"' >> ~/.zshrc
 fi
 
-# Fix SDKMAN batcat dependency warning
+# Add Local Bin to PATH (Useful for custom user scripts)
+if ! grep -q "$HOME/.local/bin" ~/.zshrc; then
+    echo -e '\n# Local Binaries' >> ~/.zshrc
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+fi
+
+# SDKMAN batcat dependency warning fix
 if ! grep -q 'alias batcat="cat"' ~/.zshrc; then
+    echo -e '\n# SDKMAN fix' >> ~/.zshrc
     echo 'alias batcat="cat"' >> ~/.zshrc
 fi
 
+# 6. Install Google Antigravity (CLI + IDE)
+echo "-> Installing Google Antigravity CLI..."
+curl -fsSL https://antigravity.google/cli/install.sh | bash
+echo "-> CLI installed successfully!"
+
+echo "-> Installing Google Antigravity IDE via Homebrew..."
+brew tap ublue-os/tap
+brew install --cask antigravity-ide-linux
+echo "-> Antigravity IDE installed successfully!"
+
 echo "------------------------------------------"
 echo " Setup completed successfully!"
+echo " Python, Go, Rust, Java, and Antigravity are ready."
 echo " Please log out and log back in to apply all changes."
 echo "=========================================="

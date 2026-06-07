@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Configuration step
+STEP=10
+ACTION=$1
+
+# Count connected monitors by reading directly from the kernel (reliable on Wayland)
+MONITORS=$(cat /sys/class/drm/*/status 2>/dev/null | grep -c "^connected")
+
+if [ "$MONITORS" -gt 1 ]; then
+    # ==========================================
+    # EXTERNAL MONITOR LOGIC (Hardware Dimming via ddcutil)
+    # ==========================================
+    
+    STATE_FILE="/tmp/ext_monitor_brightness"
+    
+    # If the state file doesn't exist, create it starting at 50%
+    if [ ! -f "$STATE_FILE" ]; then
+        echo "50" > "$STATE_FILE"
+    fi
+    
+    CURRENT=$(cat "$STATE_FILE")
+    
+    # Calculate the new absolute value (0 - 100)
+    if [ "$ACTION" == "up" ]; then
+        NEW_VAL=$((CURRENT + STEP))
+        if [ "$NEW_VAL" -gt 100 ]; then NEW_VAL=100; fi
+    elif [ "$ACTION" == "down" ]; then
+        NEW_VAL=$((CURRENT - STEP))
+        # ddcutil allows going down to 0, but we stop at 5 for safety to avoid a pitch-black screen
+        if [ "$NEW_VAL" -lt 5 ]; then NEW_VAL=5; fi
+    fi
+    
+    # Save the new state
+    echo "$NEW_VAL" > "$STATE_FILE"
+    
+    # Send the hardware command specifically to Display 1 (the BenQ). 
+    # The trailing "&" runs it in the background so the script doesn't block,
+    # making the KDE notification appear instantly!
+    ddcutil --display 1 setvcp 10 "$NEW_VAL" >/dev/null 2>&1 &
+
+    # Send the notification to KDE Plasma
+    notify-send -h string:x-canonical-private-synchronous:brightness_notification \
+                -h int:value:$NEW_VAL \
+                "External Monitor: ${NEW_VAL}%"
+else
+    # ==========================================
+    # LAPTOP SCREEN LOGIC (Using brightnessctl)
+    # ==========================================
+    
+    case "$ACTION" in
+        up)
+            brightnessctl set +$STEP% -q
+            ;;
+        down)
+            brightnessctl set $STEP%- -q
+            ;;
+    esac
+
+    CURRENT_LAPTOP=$(brightnessctl g)
+    MAX_LAPTOP=$(brightnessctl m)
+    PERCENT_LAPTOP=$(( 100 * CURRENT_LAPTOP / MAX_LAPTOP ))
+
+    notify-send -h string:x-canonical-private-synchronous:brightness_notification \
+                -h int:value:$PERCENT_LAPTOP \
+                "Laptop Monitor: ${PERCENT_LAPTOP}%"
+fi
