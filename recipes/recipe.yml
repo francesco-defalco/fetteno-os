@@ -1,5 +1,5 @@
-name: fetteno-os
-description: My pure Aurora-DX workstation for ThinkPad P14s with custom scripts
+name: fetteno-os-gnome
+description: My Bluefin-DX development workstation for ThinkPad P14s
 image-version: latest
 
 # Base image: Official Aurora developer image
