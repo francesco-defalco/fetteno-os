@@ -14,7 +14,7 @@ modules:
   # 2. CACHYOS & SCX REPOSITORIES (Origami/RakuOS DNA)
   # Inject the community repositories for the custom kernel and schedulers
   - type: copr
-    copr:
+    coprs:
       - bieszczaders/kernel-cachyos
       - alternate-gentoo/scx
 
