@@ -11,9 +11,10 @@ modules:
       - source: usr
         destination: /usr
 
-  # 2. REPOSITORY PREPARATION (CachyOS/SCX)
+  # 2. CACHYOS & SCX REPOSITORIES (Origami/RakuOS DNA)
+  # Inject the community repositories for the custom kernel and schedulers
   - type: copr
-    repos:
+    copr:
       - bieszczaders/kernel-cachyos
       - alternate-gentoo/scx
 
