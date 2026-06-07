@@ -1,6 +1,6 @@
 name: fetteno-os
 description: My Bluefin-DX development workstation for ThinkPad P14s
-image-version: latest
+image-version: gnome
 
 # Ritorno all'immagine ufficiale di Bluefin per sviluppatori
 base-image: ghcr.io/ublue-os/bluefin-dx
